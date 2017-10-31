@@ -1,7 +1,7 @@
-#include<unistd.h>
-#include<termios.h>
-#include<stdlib.h>
-#include<errno.h>
+#include<unistd.h> //read()
+#include<termios.h> //for all the terminal bit flags to enable raw mode.
+#include<stdlib.h>	//exit() ??
+#include<errno.h>	//perror()
 #include<ctype.h>
 #include<stdio.h>
 
@@ -44,7 +44,7 @@ void enableRawMode(){
 
 	//setting timeout for read()
 	raw.c_cc[VMIN] = 0;
-	//raw.c_cc[VTIME] = 1;
+	raw.c_cc[VTIME] = 1;
 
 	if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
 		die("tcsetattr");
@@ -58,7 +58,7 @@ int main(){
 	//read() reads until it reaches the EOF. This is signalled ny ^-D.
 	while (1){
 		c ='\0';
-		if(read(STDIN_FILENO, &c, 1) == -1 && errno == EAGAIN)
+		if(read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN)
 			die("read");
 		if(c == CTRL_KEY('q')){
 			printf("EXIT\r\n");
